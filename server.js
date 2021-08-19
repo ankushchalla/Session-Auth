@@ -19,10 +19,12 @@ app.use(session({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const users = [
+const usersDB = [
     {id: 1, name: 'Ankush', email: 'ankush@gmail.com', password: 'secret'},
     {id: 2, name: 'Max', email: 'max@gmail.com', password: 'secret'},
 ]
+
+const sessionDB = []
 
 app.get('/home', (req, res) => {
     const { userId } = req.session;    
@@ -49,7 +51,7 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
     const { email, password } = req.body
-    const user = users.find(user => user.email === email && user.password === password)
+    const user = usersDB.find(user => user.email === email && user.password === password)
     if (user) {
         req.session.userId = user.id
         return res.redirect('/home')

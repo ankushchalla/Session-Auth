@@ -27,14 +27,11 @@ const usersDB = [
 const sessionDB = []
 
 app.get('/home', (req, res) => {
-    const { userId } = req.session;    
-
-    let homePage = `
-    <h1>${userId ? 'Welcome user: ' + userId : 'Please login or create an account.'}</h1>
-    <a href = '/login'>Login<a/>
-    <a href = '/register'>Register<a/>
-    `
-    res.send(homePage)
+    const cookie = req.get('Cookie')
+    console.log("session in get: " + cookie);
+    res.json({
+        message: `Session ID`
+    })
 })
 
 app.get('/login', (req, res) => {
@@ -53,8 +50,10 @@ app.post('/login', (req, res) => {
     const { email, password } = req.body
     const user = usersDB.find(user => user.email === email && user.password === password)
     if (user) {
-        req.session.userId = user.id
-        return res.redirect('/home')
+        // You have to set something to the session for it to be created client side.
+        req.session.userId = 5;
+        console.log(`session: ${req.sessionID}`);
+        res.json({ message: 'Login successful.'})
     } else {
         res.sendStatus(404)
     }

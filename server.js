@@ -30,7 +30,7 @@ app.get('/home', (req, res) => {
     const cookie = req.get('Cookie')
     console.log("session in get: " + cookie);
     res.json({
-        message: `Session ID`
+        message: "hello"
     })
 })
 

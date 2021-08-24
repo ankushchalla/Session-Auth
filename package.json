@@ -20,9 +20,11 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "connect-mongodb-session": "^3.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.16.3",
     "express-session": "^1.17.2",
-    "if-env": "^1.0.4"
+    "if-env": "^1.0.4",
+    "mongoose": "^5.13.8"
   }
 }

@@ -1,9 +1,20 @@
 const express = require('express')
 const session = require('express-session')
+const MongoDBStore = require('connect-mongodb-session')(session)
 
 const PORT = 4005
 
 const app = express()
+
+const store = new MongoDBStore({
+    uri: 'mongodb://localhost:27017/mongo_session_store',
+    collection: 'user_sessions'
+})
+
+// Catch errors
+store.on('error', function (error) {
+    console.log(error);
+});
 
 app.use(session({
     cookie: {
@@ -13,15 +24,16 @@ app.use(session({
     name: 'sid',
     resave: false,
     saveUninitialized: false,
-    secret: 'keyboard cat'
+    secret: 'keyboard cat',
     // Session store defaults to in memory. Change to mongo later. 
+    store: store
 }))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const usersDB = [
-    {id: 1, name: 'Ankush', email: 'ankush@gmail.com', password: 'secret'},
-    {id: 2, name: 'Max', email: 'max@gmail.com', password: 'secret'},
+    { id: 1, name: 'Ankush', email: 'ankush@gmail.com', password: 'secret' },
+    { id: 2, name: 'Max', email: 'max@gmail.com', password: 'secret' },
 ]
 
 const sessionDB = []
@@ -34,18 +46,6 @@ app.get('/home', (req, res) => {
     })
 })
 
-app.get('/login', (req, res) => {
-    res.send(`
-    <h1>Login</h1>
-    <form method = 'POST' action = '/login'>
-        <input type = 'email' name = 'email' placeholder = 'Email' required/>
-        <input type = 'password' name = 'password' placeholder = 'Password' required/>
-        <input type = 'submit' />
-    </form>
-    <a href = '/home'>Home</a>
-    `)
-})
-
 app.post('/login', (req, res) => {
     const { email, password } = req.body
     const user = usersDB.find(user => user.email === email && user.password === password)
@@ -53,17 +53,11 @@ app.post('/login', (req, res) => {
         // You have to set something to the session for it to be created client side.
         req.session.userId = 5;
         console.log(`session: ${req.sessionID}`);
-        res.json({ message: 'Login successful.'})
+        res.json({ message: 'Login successful.' })
     } else {
         res.sendStatus(404)
     }
 })
-
-// app.get('/', (req, res) => {
-//     // Server will serve build folder during production. 
-//     // For local dev, we use a proxy instead. 
-//     res.sendFile(path.join(__dirname, '/client/build/index.html'));
-// })
 
 app.listen(PORT, () =>
     console.log(`http://localhost:${PORT}`)

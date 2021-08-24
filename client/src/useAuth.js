@@ -5,7 +5,7 @@ export function useAuth() {
     useEffect(() => {
         axios.post('/login', {
             email: "ankush@gmail.com",
-            password: "secrt"
+            password: "secret"
         })
         .then(() => setIsValidUser(true))
         .catch(() => setIsValidUser(false))
